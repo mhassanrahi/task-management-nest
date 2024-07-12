@@ -3,9 +3,15 @@ import { TasksModule } from './tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { configSchema } from './config.schema';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [`.env.${process.env.NODE_ENV}.local`, '.env'],
+      validationSchema: configSchema,
+    }),
     TasksModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -20,10 +26,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         autoLoadEntities: true,
         synchronize: true,
       }),
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: [`.env.${process.env.NODE_ENV}.local`, '.env'],
     }),
     AuthModule,
   ],
